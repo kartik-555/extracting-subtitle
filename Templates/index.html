@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Video Management</h1>
+<ul>
+    <li><a href="{% url 'upload_video' %}">Upload Video</a></li>
+    <li><a href="{% url 'list_videos' %}">List of Videos</a></li>
+
+
+</ul>
+{% endblock %}

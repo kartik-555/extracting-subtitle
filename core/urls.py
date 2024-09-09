@@ -1,0 +1,16 @@
+# urls.py
+
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='index'),
+    path('list/', views.ListVideosView.as_view(), name='list_videos'),
+    path('upload/', views.UploadVideoView.as_view(), name='upload_video'),
+    path('videos/<int:pk>/', views.VideoDetailView.as_view(), name='video_detail'),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
