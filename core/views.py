@@ -5,6 +5,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView
 from .models import Video, Subtitle
 from .forms import VideoForm
+import os
 
 def home(request):
     return render(request, 'index.html')
@@ -24,21 +25,16 @@ class UploadVideoView(View):
 
     def process_video(self, video_id):
         video = Video.objects.get(id=video_id)
-        print(video.id)
         video_path = video.file.path
         subtitle_path = f"{video_path}.srt"
-        print(subtitle_path,"subtitle_path")
 
         # Run ccextractor to extract subtitles
-        result = subprocess.run(['ccextractor', video_path, '-o', subtitle_path], capture_output = True, text= True)
+        result = subprocess.run(['ccextractor', video_path, '-o', subtitle_path], capture_output=True, text=True)
 
         if result.returncode == 0:
-            with open(subtitle_path, 'r') as file:
-                content = file.read()
-                # Save subtitles to the Subtitle model
-                Subtitle.objects.create(video=video, language='en', content=content)
+            Subtitle.objects.create(video=video, language='en', content=subtitle_path)
         else:
-            print(result.returncode,"000000000000")
+            print(result.returncode, "Error extracting subtitles")
 
 class ListVideosView(View):
     def get(self, request):
@@ -52,8 +48,8 @@ class VideoDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['subtitles'] = self.object.subtitles.all()
-        print(self.object.subtitles.all())
+        subtitles = self.object.subtitles.all()
+        context['subtitles'] = [{'language': subtitle.language, 'content': subtitle.content} for subtitle in subtitles]
         return context
 
 class SearchSubtitlesView(View):

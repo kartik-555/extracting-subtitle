@@ -4,9 +4,11 @@
 
 {% block content %}
 <h1>{{ video.title }}</h1>
+
 <video id="my-video" class="video-js" controls preload="auto" width="640" height="264" data-setup="{}">
     <source src="{{ video.file.url }}" type="video/mp4">
     {% for subtitle in subtitles %}
+    <h1>in video</h1>
         <track src="{{ subtitle.content }}" kind="subtitles" srclang="{{ subtitle.language }}" label="{{ subtitle.language }}" default>
     {% endfor %}
     Your browser does not support the video tag.
