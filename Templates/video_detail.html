@@ -4,22 +4,12 @@
 
 {% block content %}
 <h1>{{ video.title }}</h1>
-
-<video id="my-video" class="video-js" controls preload="auto" width="640" height="264" data-setup="{}">
+<video controls preload="auto" data-setup="{}">
     <source src="{{ video.file.url }}" type="video/mp4">
-    {% for subtitle in subtitles %}
     <h1>in video</h1>
-        <track src="{{ subtitle.content }}" kind="subtitles" srclang="{{ subtitle.language }}" label="{{ subtitle.language }}" default>
-    {% endfor %}
+    {% for subtitle in subtitles %}
+        <track src="/media/videos/AMC.vtt" kind="subtitles" srclang="{{ subtitle.language }}" label="{{ subtitle.language }}" default>
     Your browser does not support the video tag.
+    {% endfor %}
 </video>
-<script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var player = videojs('my-video');
-        player.on('error', function() {
-            console.error('Video.js error:', player.error());
-        });
-    });
-</script>
 {% endblock %}

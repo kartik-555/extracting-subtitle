@@ -4,6 +4,14 @@
 
 {% block content %}
 <h1 class="mb-4">List of Videos</h1>
+
+<form method="get" action="{% url 'list_videos' %}">
+    <div class="input-group mb-4">
+        <input type="text" name="q" class="form-control" placeholder="Search subtitles..." value="{{ request.GET.q }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
 <div class="row">
     {% for video in videos %}
         <div class="col-md-4">
@@ -21,4 +29,45 @@
         </div>
     {% endfor %}
 </div>
+
+{% if request.GET.q %}
+    <h2>Search Results for "{{ request.GET.q }}"</h2>
+    <ul id="search-results">
+        {% for video in videos %}
+            <li>
+                <p>{{ video.title }}</p>
+                <ul>
+                    {% for subtitle in video.subtitles.all %}
+                    <p>{{subtitle.timestamp}}</p>
+                    <li>
+                           <a href="#" class="subtitle-timestamp" data-video-id="{{ video.id }}" data-timestamp="{{ subtitle.timestamp }}">
+                                {{ subtitle.timestamp }} - {{ subtitle.text }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const results = document.querySelectorAll('.subtitle-timestamp');    results.forEach(result => {
+        result.addEventListener('click', function(event) {
+            event.preventDefault();
+            const videoId = this.dataset.videoId;
+            const timestamp = this.dataset.timestamp;
+            const video = document.querySelector(`video[data-video-id="${videoId}"]`);
+            if (video) {
+                const timeParts = timestamp.split(':');
+                const seconds = (+timeParts[0]) * 60 * 60 + (+timeParts[1]) * 60 + (+timeParts[2]);
+                video.currentTime = seconds;
+                video.play();
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}
