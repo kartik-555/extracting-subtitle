@@ -4,12 +4,55 @@
 
 {% block content %}
 <h1>{{ video.title }}</h1>
-<video controls preload="auto" data-setup="{}">
+<video id="my-video" controls>
     <source src="{{ video.file.url }}" type="video/mp4">
-    <h1>in video</h1>
     {% for subtitle in subtitles %}
-        <track src="/media/videos/AMC.vtt" kind="subtitles" srclang="{{ subtitle.language }}" label="{{ subtitle.language }}" default>
-    Your browser does not support the video tag.
+    <track src="{{ subtitle.content }}" kind="subtitles" srclang="{{ subtitle.language }}" label="{{ subtitle.language }}" default>
     {% endfor %}
 </video>
+
+<form method="get" action="">
+    <div class="input-group mb-4">
+        <input type="text" name="q" class="form-control" placeholder="Search subtitles..." value="{{ query }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+{% if query %}
+    <h2>Search Results for "{{ query }}"</h2>
+    <ul>
+        {% if search_results %}
+        {% for result in search_results %}
+            <li><a href="#" onclick="playFromTimestamp('{{ result.timestamp }}')">{{ result.timestamp }}</a>: {{ result.text }}</li>
+        {% endfor %}
+        {% else %}
+        <li>No results found.</li>
+        {% endif %}
+    </ul>
+{% else %}
+
+{% endif %}
+
+<script>
+    function playFromTimestamp(timestamp) {
+        console.log("Timestamp:", timestamp);
+        var video = document.getElementById('my-video');
+        var parts = timestamp.split(':');
+        var seconds = (+parts[0]) * 60 * 60 + (+parts[1]) * 60 + (+parts[2]);
+        console.log("Calculated seconds:", seconds);
+        video.currentTime = seconds;
+        video.play();
+    }
+<!--    to handle multiple file formats-->
+
+    const videoFormats = ['webm', 'ogg', 'mkv'];
+    const videoUrl = "{{ video.file.url }}".replace('.mp4', '');
+
+    videoFormats.forEach(format => {
+        const source = document.createElement('source');
+        source.src = `${videoUrl}.${format}`;
+        source.type = `video/${format === 'mkv' ? 'x-matroska' : format}`;
+        document.getElementById('my-video').appendChild(source);
+    });
+</script>
 {% endblock %}

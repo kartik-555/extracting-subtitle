@@ -9,6 +9,6 @@ class Video(models.Model):
 class Subtitle(models.Model):
     video = models.ForeignKey(Video, related_name='subtitles', on_delete=models.CASCADE)
     language = models.CharField(max_length=10)
-    content = models.FileField(upload_to='subtitles/')
+    content = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
