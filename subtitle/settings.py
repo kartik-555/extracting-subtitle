@@ -80,14 +80,15 @@ WSGI_APPLICATION = 'subtitle.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# added condition if I am running locally or in docker
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fatmug',
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'fatmug'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'admin'),
+        'HOST': os.getenv('DB_HOST', 'localhost' if not os.getenv('RUNNING_IN_DOCKER') else 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
